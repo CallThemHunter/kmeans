@@ -96,7 +96,6 @@ if __name__ == "__main__":
     def random_point():
         return np.random.randint(0, high=10, size=(2, 1))
 
-
     points = []
     for _ in range(25):
         points.append(random_point())
