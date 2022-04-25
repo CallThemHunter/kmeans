@@ -8,17 +8,14 @@ class Cluster():
     def __init__(self, data: List[NDArray]):
         self.n = len(data)
         self.data = data
-        self.centroid: NDArray = np.mean(self.data, axis=0)
+        self.centroid: np.Array = np.mean(self.data, axis=0)
 
     def __str__(self):
         out = ""
-        out += "\nn: " + self.n.__repr__()
-        out += "\ndata: " + self.data.__repr__()
-        out += "\ncentroid: " + self.centroid.__repr__()
+        out += "\nn: " + self.n.__str__()
+        out += "\ndata: " + self.data.__str__()
+        out += "\ncentroid: " + self.centroid.__str__()
         return out
-
-    def __len__(self):
-        return self.data.__len__()
 
     def pop(self, index: int):
         element = self.data.pop(index)
@@ -51,10 +48,9 @@ class Cluster():
 
 
 class KMeans():
-    def __init__(self, data: List[NDArray], k=4):
+    def __init__(self, data: List[np.array], k=4):
         self._k = k
-        np.random.shuffle(data)
-        self.data = data
+        self.data = np.random.shuffle(data)
         splits = np.array_split(self.data, self._k)
         splits = [[row for row in cluster] for cluster in splits]
         self.clusters = list(map(
@@ -63,7 +59,8 @@ class KMeans():
 
     def __str__(self):
         out = ""
-        for cluster in self.clusters:
+        for i, cluster in enumerate(self.clusters):
+            out += "\nCluster: " + str(i)
             out += cluster.__str__()
         return out
 
@@ -73,14 +70,14 @@ class KMeans():
         return np.sum(np.square(diff))
 
     def hart_wong_update(self):
-        def optimizer(x: NDArray, c_n: Cluster, c_m: Cluster):
-            n_len = len(c_n)
-            m_len = len(c_m)
+        def optimizer(x: np.Array, c_pop: Cluster, c_push: Cluster):
+            pop_len = len(c_pop)
+            push_len = len(c_push)
 
-            diff_n = np.sum(np.square(c_n.centroid - x))
-            diff_m = np.sum(np.square(c_m.centroid - x))
+            diff_n = np.sum(np.square(c_pop.centroid - x))
+            diff_m = np.sum(np.square(c_push.centroid - x))
 
-            return n_len * diff_n / (n_len - 1) - m_len * diff_m / (m_len + 1)
+            return pop_len * diff_n / (pop_len - 1) - push_len * diff_m / (push_len + 1)
 
         best = [0, 0, 0, 0]
         for c_n in self.clusters:
@@ -91,14 +88,13 @@ class KMeans():
                         if err > best[0]:
                             best = [err, i, c_n, c_m]
 
-        if best[0] != 0:
-            _, i, c_n, c_m = best
+        _, i, c_n, c_m = best
         c_m.append(c_n.pop(i))
 
 
 if __name__ == "__main__":
     def random_point():
-        return np.random.randint(0, high=10, size=(1, 2))
+        return np.random.randint(0, high=10, size=(2, 1))
 
 
     points = []
@@ -110,7 +106,6 @@ if __name__ == "__main__":
     clustering = KMeans(points, k=2)
 
     print(points)
-    print(clustering)
-    for _ in range(50):
+    for _ in range(20):
         clustering.hart_wong_update()
-    print(clustering)
+        print(clustering)
