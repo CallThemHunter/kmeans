@@ -4,7 +4,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 
-class Cluster():
+class Cluster:
     def __init__(self, data: List[NDArray]):
         self.n = len(data)
         self.data = data
@@ -47,7 +47,7 @@ class Cluster():
         return (self.centroid * self.n + element) / (self.n + 1)
 
 
-class KMeans():
+class KMeans:
     def __init__(self, data: List[np.array], k=4):
         self._k = k
         self.data = np.random.shuffle(data)
